@@ -1,0 +1,33 @@
+.place__image {
+  min-width: 100%;
+  height: 282px;
+  min-height: 282px;
+  object-fit: cover;	
+  position: relative;
+  text-align: center;
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.place__image:before {
+  content: '';
+  width: 100%;
+  height: 282px;
+  position: absolute;
+  background-color: #e4e4e4;
+  left: 0;
+}
+
+.place__image:after {
+  content: "\2639" " " attr(alt);
+  font-size: 18px;
+  color: rgb(100, 100, 100);
+  display: block;
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

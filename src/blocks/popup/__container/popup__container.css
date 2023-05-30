@@ -1,0 +1,13 @@
+.popup__container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+}
+
+@media (max-width: 650px) {
+  .popup__container {
+    flex-direction: column;
+    gap: 16px;
+  }
+}

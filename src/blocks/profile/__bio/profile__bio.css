@@ -1,0 +1,16 @@
+.profile__bio {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(min-content,max-content));
+  grid-template-rows: repeat(2,minmax(min-content,max-content));
+  grid-template-areas:
+  "name edit"
+  "profession .";
+  gap: 18px 16px;
+}
+
+@media (max-width: 880px){
+  .profile__bio {
+    gap: 8px 14px;
+    margin-left: 32px;
+  }  
+}
