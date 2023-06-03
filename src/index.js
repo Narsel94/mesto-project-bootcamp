@@ -51,7 +51,7 @@ function editProfileBio(event) {
   event.preventDefault();
   profileItemName.textContent = inputNameProfile.value;
   profileItemProfession.textContent = inputProfessionProfile.value;
-  formEditProfile.addEventListener('submit', handleClosePopup(popupEditProfile));
+  handleClosePopup(popupEditProfile);
 }
 
 // добавление слушателя на кнопку сохранения изменений
@@ -69,7 +69,7 @@ function handleFormAddCard(event) {
   };
   const newCard = createCard(card);
   cardContainer.prepend(newCard);
-  formAddCard.reset;
+  formAddCard.reset();
   handleClosePopup(popupAddCard);
 }
 
