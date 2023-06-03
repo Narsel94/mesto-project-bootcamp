@@ -10,6 +10,10 @@
   padding: 34px 36px 36px;
 }
 
+.popup__form:nth-child(4) {
+  outline: 1px solid red;
+}
+
 @media (max-width: 650px) {
   .popup__form {
     max-width: 282px;

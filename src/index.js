@@ -10,6 +10,9 @@ const cardContainer = document.querySelector('.places');
 // профиль
 const profileItemName = document.querySelector('.profile__name');
 const profileItemProfession = document.querySelector('.profile__profession');
+const buttonEditAvatar = document.querySelector('.profile__button-avatar-edit');
+
+const formEditAvatar = document.querySelector('.popup_name_avatar-edit');
 
 // форма редактирования профиля formEditProfile
 const popupEditProfile = document.querySelector('.popup_name_profile-edit');
@@ -39,6 +42,10 @@ function openEditProfileForm() {
   inputNameProfile.value = profileItemName.textContent;
   inputProfessionProfile.value = profileItemProfession.textContent;
 };
+
+buttonEditAvatar.addEventListener('click', () => {
+  handleOpenPopup(formEditAvatar)
+});
 
 // добавление слушателя на кнопку редактирования профиля
 buttonEditProfile.addEventListener('click', () => {
