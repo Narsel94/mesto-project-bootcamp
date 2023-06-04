@@ -1,6 +1,8 @@
 
 import {handleOpenPopup} from './modal.js';
 
+
+
 const templateCard = document.getElementById('template-cards').content.querySelector('.place');
 
 //попап картинки 
