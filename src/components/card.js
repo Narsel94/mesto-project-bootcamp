@@ -1,8 +1,6 @@
 
 import {handleOpenPopup} from './modal.js';
 
-
-
 const templateCard = document.getElementById('template-cards').content.querySelector('.place');
 
 //попап картинки 
@@ -16,9 +14,11 @@ function createCard(card) {
   const cardElement = templateCard.cloneNode(true);
   const cardTitle = cardElement.querySelector('.place__title');
   const cardImage = cardElement.querySelector('.place__image');
+  const cardLikesCounter = cardElement.querySelector('.place__like-counter');
   cardTitle.textContent = card.name;
   cardImage.setAttribute('src', card.link);
   cardImage.setAttribute('alt', card.name);
+  cardLikesCounter.textContent = card.likes.length;
   //на картинку слушатель открытия попапа картинки
   cardImage.addEventListener('click', () => makeImagePopup(card.name, card.link));
 

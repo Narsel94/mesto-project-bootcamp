@@ -8,11 +8,9 @@ const config = {
 
 
 export function getItems() {
-  return fetch('https://nomoreparties.co/v1/wbf-cohort-9/cards', {
-  headers: {
-    authorization: 'be1a04fc-d09b-45f3-8225-ecb620a5b972',
-    'Content-Type': 'application/json'
-  }
+  return fetch(`${config.baseUrl}/cards`, {
+  headers: config.headers
+  
 })
   .then(res => {
     if (res.ok) { 
@@ -23,13 +21,9 @@ export function getItems() {
 };
 
 export function getProfile() {
-  return fetch('https://nomoreparties.co/v1/wbf-cohort-9/users/me', {
-    headers: {
-    authorization: 'be1a04fc-d09b-45f3-8225-ecb620a5b972',
-    'Content-Type': 'application/json'
-  }
+  return fetch(`${config.baseUrl}/users/me`, {
+    headers: config.headers
 })
-
   .then(res => {
     if(res.ok) {
       return res.json();
@@ -39,11 +33,8 @@ export function getProfile() {
 };
 
 export function setCard(name, link) {
-  return fetch('https://nomoreparties.co/v1/wbf-cohort-9/cards', {
-    headers: {
-      authorization: 'be1a04fc-d09b-45f3-8225-ecb620a5b972',
-      'Content-Type': 'application/json'
-  },
+  return fetch(`${config.baseUrl}/cards`, {
+    headers: config.headers,
     method: 'POST',
     body: JSON.stringify({
       name: name,
@@ -59,12 +50,9 @@ export function setCard(name, link) {
 };
 
 export function editProfile(name, about) {
-  return fetch('https://nomoreparties.co/v1/wbf-cohort-9/users/me', {
+  return fetch(`${config.baseUrl}/cards`, {
     method: "PATCH",
-    headers: {
-      authorization: 'be1a04fc-d09b-45f3-8225-ecb620a5b972',
-      'Content-Type': 'application/json'
-    },
+    headers: config.headers,
     body: JSON.stringify({
       name: name,
       about: about
@@ -77,3 +65,23 @@ export function editProfile(name, about) {
     return Promise.reject(`Ошибка: ${res.status}`)
   })
 };
+
+
+export function editAvatar(avatar) {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: "PATCH",
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar: avatar
+    })
+  })
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    } else {
+      return Promise.reject(`Ошибка: ${res.status}`)
+    }
+  })
+};
+
+// export function getCardsLikes(likes)
