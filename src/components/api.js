@@ -6,32 +6,32 @@ const config = {
   }
 }
 
+//проверка ответа сервера 
+export const responseStatus = (res) => {
+  if (res.ok) {
+    return res.json();
+  } 
+  return Promise.reject(`Ошибка: ${res.status}`)
+}
 
+//получение данных карточек с сервера
 export function getItems() {
   return fetch(`${config.baseUrl}/cards`, {
   headers: config.headers
   
 })
-  .then(res => {
-    if (res.ok) { 
-      return res.json();
-    } 
-    return Promise.reject(`Ошибка: ${res.status}`)
-  })
+  .then(responseStatus)
 };
 
+//получение данных пользователя
 export function getProfile() {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: config.headers
 })
-  .then(res => {
-    if(res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`)
-  })
+  .then(responseStatus)
 };
 
+//добавление карточки (на сервер)
 export function setCard(name, link) {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers,
@@ -41,16 +41,12 @@ export function setCard(name, link) {
       link: link,
     })
 })
-.then(res => {
-  if(res.ok) {
-    return res.json();
-  }
-  return Promise.reject(`Ошибка: ${res.status}`)
-})
+.then(responseStatus)
 };
 
+//Обновление данных пользователя
 export function editProfile(name, about) {
-  return fetch(`${config.baseUrl}/cards`, {
+  return fetch(`${config.baseUrl}/users/me`, {
     method: "PATCH",
     headers: config.headers,
     body: JSON.stringify({
@@ -58,15 +54,10 @@ export function editProfile(name, about) {
       about: about
     })
   })
-  .then(res => {
-    if(res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`)
-  })
+  .then(responseStatus)
 };
 
-
+// обновление аватарки на сервере 
 export function editAvatar(avatar) {
   return fetch(`${config.baseUrl}/users/me/avatar`, {
     method: "PATCH",
@@ -75,13 +66,32 @@ export function editAvatar(avatar) {
       avatar: avatar
     })
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    } else {
-      return Promise.reject(`Ошибка: ${res.status}`)
-    }
-  })
+  .then(responseStatus)
 };
 
-// export function getCardsLikes(likes)
+// удалиение карточки
+export function deleteItems(cardId){
+  return fetch(`${config.baseUrl}/cards/${cardId}`, {
+    method: "DELETE", 
+    headers: config.headers,
+  })
+  .then(responseStatus)
+};
+
+//постановка лайка 
+export function putCardLike(cardId) {
+  return fetch(`${config.baseUrl}/cards/${cardId}/likes`,{
+    method: "PUT",
+    headers: config.headers,
+  })
+  .then(responseStatus)
+};
+
+//удаление лайка
+export function deleteCardLike(cardId) {
+  return fetch(`${config.baseUrl}/cards/${cardId}/likes`,{
+    method: "DELETE",
+    headers: config.headers,
+  })
+  .then(responseStatus)
+}

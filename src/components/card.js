@@ -1,4 +1,4 @@
-
+import {deleteItems, putCardLike, deleteCardLike} from '../components/api.js';
 import {handleOpenPopup} from './modal.js';
 
 const templateCard = document.getElementById('template-cards').content.querySelector('.place');
@@ -10,7 +10,7 @@ const imageMain = imagePopup.querySelector('.popup__image');
 
 
 //функция создание карточки  
-function createCard(card) {
+function createCard(card, idUser) {
   const cardElement = templateCard.cloneNode(true);
   const cardTitle = cardElement.querySelector('.place__title');
   const cardImage = cardElement.querySelector('.place__image');
@@ -21,16 +21,25 @@ function createCard(card) {
   cardLikesCounter.textContent = card.likes.length;
   //на картинку слушатель открытия попапа картинки
   cardImage.addEventListener('click', () => makeImagePopup(card.name, card.link));
-
+ 
   //удаление
   const cardTrashButton = cardElement.querySelector('.place__trash-button');
-  cardTrashButton.addEventListener('click', () => handleDeleteCard(cardElement));
+  cardTrashButton.addEventListener('click', () => handleDeleteCard(cardElement, card._id));
+  
+  if (card.owner._id !== idUser) {
+    cardTrashButton.remove();
+  }
+
   //функция лайка
   const buttonLikeCard = cardElement.querySelector('.place__like-button');
-  buttonLikeCard.addEventListener('click', handleLikeButtom);
+  buttonLikeCard.addEventListener('click', () => toggleLike(card, card._id, idUser));
+
+  renderCardLike(card, idUser, buttonLikeCard);
+
   return cardElement;
 }
 
+// открытие попапа картинки
 function makeImagePopup(title, link) {
   imageMain.setAttribute('src', link);
   imageMain.setAttribute('alt', title)
@@ -39,15 +48,43 @@ function makeImagePopup(title, link) {
 }
 
 //функция кнопки удаления 
-function handleDeleteCard(cardElement) {
-  cardElement.remove();
+function handleDeleteCard(item, itemId) {
+  deleteItems(itemId)
+    .then(() => {
+      item.remove()
+    })
+    .catch(err =>
+      console.log(err)) 
 }
 
-// функция лайка
-function handleLikeButtom(event) {
-  const cardBlock = event.target.closest('.place');
-  const likeButtom = cardBlock.querySelector('.place__like-button');
-  likeButtom.classList.toggle('place__like-buttom_liked');
+//проверка наличия лайка 
+function checkCardLikes(card, userId) {
+  return card.likes.some(like => like._id === userId)
+}
+
+//функция постановки и улаления лайка 
+function toggleLike(card, cardId, userId) {
+  if(checkCardLikes(card, userId)) {
+    deleteCardLike(cardId)
+    .catch(err => 
+      console.log(err)
+    )      
+  } else {
+    putCardLike(cardId)
+    .catch(err => 
+      console.log(err)
+    )  
+  }
+}
+
+//функция отображения лайка 
+function renderCardLike(card, idUser, button) {
+  if (checkCardLikes(card, idUser)) {
+    button.classList.add('place__like-buttom_liked');
+  } else {
+    button.classList.remove('place__like-buttom_liked');
+  }
 }
 
 export default createCard;
+

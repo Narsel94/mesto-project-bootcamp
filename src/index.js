@@ -10,32 +10,25 @@ import {
   getProfile,
   setCard,
   editProfile,
-  editAvatar
+  editAvatar,
 } from "../src/components/api.js";
-
-getItems()
-  .then((res) => {
-    res.forEach((item) => {
-      const InitialCard = createCard(item);
-      cardContainer.prepend(InitialCard);
+  export let userId;
+ 
+Promise.all([getProfile(), getItems()])
+  .then(([info, initialCards]) =>{
+    profileItemName.textContent = info.name;
+    profileItemProfession.textContent = info.about;
+    imgAvatar.setAttribute('src', info.avatar);
+    userId = info._id;
+    initialCards.forEach((item) => {
+      const InitialCard = createCard(item, userId);
+      cardContainer.append(InitialCard);
     })
   })
   .catch(err => {
     console.log(err);
   });
-
-getProfile()
-  .then((res) => {
-    profileItemName.textContent = res.name;
-    profileItemProfession.textContent = res.about;
-    imgAvatar.setAttribute('src', res.avatar);
-  })
-  .catch(err => {
-    console.log(err);
-  });
-
-
-
+  
 
 const popupList = document.querySelectorAll(".popup");
 const cardContainer = document.querySelector(".places");
@@ -46,7 +39,7 @@ const profileItemProfession = document.querySelector(".profile__profession");
 const buttonEditAvatar = document.querySelector(".profile__button-avatar-edit");
 const formEditAvatar = document.querySelector(".popup_name_avatar-edit");
 const buttonSumbmitProfile = formEditAvatar.querySelector('.popup__submit-button');
-
+const id = '';
 //редактирование аватара
 const popupEditAvatar = document.querySelector('.popup_name_avatar-edit');
 const buttonSubmitAvatar = popupEditAvatar.querySelector('.popup__submit-button');
@@ -64,8 +57,6 @@ const inputProfessionProfile = popupEditProfile.querySelector(
   ".popup__input_name_profession"
 );
 
-
-
 // // форма добавления карточек
 const buttonOpenAddCard = document.querySelector(".profile__add-button");
 const popupAddCard = document.querySelector(".popup_name_add-card");
@@ -73,7 +64,6 @@ const formAddCard = popupAddCard.querySelector(".popup__form");
 const inputTitleAddCardForm = popupAddCard.querySelector(".popup__input_name_name");
 const inputImgUrlAddCardForm = popupAddCard.querySelector(".popup__input_name_profession");
 const buttonSubmitAddCArd = formAddCard.querySelector('.popup__submit-button');
-
 
 // реализация кнопки закрытия
 document.querySelectorAll(".popup__close-button").forEach((button) => {
@@ -87,7 +77,6 @@ document.querySelectorAll(".popup__close-button").forEach((button) => {
 function openEditProfileForm() {
   inputNameProfile.value = profileItemName.textContent;
   inputProfessionProfile.value = profileItemProfession.textContent;
-  
 }
 
 //кнопка открытия попапа редактирования аватара
@@ -141,7 +130,6 @@ function editProfileAvatar(event){
 }
 
 // добавление слушателя на кнопку изменения аватара
-console.log(formEditProfile)
 formEditAvatar.addEventListener("submit", editProfileAvatar);
 
 // добавление слушателя на кнопку сохранения изменений
@@ -156,18 +144,24 @@ buttonOpenAddCard.addEventListener("click", () =>
 function handleFormAddCard(event) {
   event.preventDefault();
   renderLoading(true, buttonSubmitAddCArd);
-  setCard(inputTitleAddCardForm.value, inputImgUrlAddCardForm.value)
+  setCard(inputTitleAddCardForm.value, inputImgUrlAddCardForm.value, userId)
     .then(res => {
       if (res.ok) {
         const card = {
           name: inputTitleAddCardForm.value,
           link: inputImgUrlAddCardForm.value,
         }; 
-        const newCard = createCard(card);
+        const newCard = createCard(card, userId);
+        return newCard;
+      }
+      })
+      .then(newCard => {
+        if (userId === newCard.owner._id) {
+           cardTrashButton.remove(); 
+        }
         cardContainer.prepend(newCard);
         formAddCard.reset();
-      }
-    })
+      })
     .catch(err => {
       console.log(err);
     })
