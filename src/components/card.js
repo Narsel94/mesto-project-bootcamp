@@ -1,13 +1,15 @@
-import {deleteItems, putCardLike, deleteCardLike} from '../components/api.js';
-import {handleOpenPopup} from './modal.js';
+import {renderLoading} from '../index.js';
+import {deleteItems, putCardLike, deleteCardLike} from './api.js';
+import {handleOpenPopup, handleClosePopup} from './modal.js';
 
 const templateCard = document.getElementById('template-cards').content.querySelector('.place');
+const popupDeleteCard = document.querySelector('.popup_name_delet');
+const buttonDeleteCard = popupDeleteCard.querySelector('.popup__submit-button');
 
 //попап картинки 
 const imagePopup = document.querySelector('.popup_name_image');
 const imageCaptionPopup = imagePopup.querySelector('.popup__image-caption');
 const imageMain = imagePopup.querySelector('.popup__image');
-
 
 //функция создание карточки  
 function createCard(card, idUser) {
@@ -22,10 +24,13 @@ function createCard(card, idUser) {
   //на картинку слушатель открытия попапа картинки
   cardImage.addEventListener('click', () => makeImagePopup(card.name, card.link));
  
-  //удаление
+  //кнопка корзины
   const cardTrashButton = cardElement.querySelector('.place__trash-button');
-  cardTrashButton.addEventListener('click', () => handleDeleteCard(cardElement, card._id));
+  cardTrashButton.addEventListener('click', () => {
+    showDelPopup(popupDeleteCard, card, card._id);
+  });
   
+  //проверка для удаления кнопки корзины
   if (card.owner._id !== idUser) {
     cardTrashButton.remove();
   }
@@ -39,6 +44,12 @@ function createCard(card, idUser) {
   return cardElement;
 }
 
+//реализация попапа удаления 
+function showDelPopup(popup, item, itemId) {
+  handleOpenPopup(popup);
+  popup.addEventListener('submit', () => handleDeleteCard(item, itemId));
+}
+
 // открытие попапа картинки
 function makeImagePopup(title, link) {
   imageMain.setAttribute('src', link);
@@ -49,12 +60,17 @@ function makeImagePopup(title, link) {
 
 //функция кнопки удаления 
 function handleDeleteCard(item, itemId) {
+  renderLoading(true, buttonDeleteCard)
   deleteItems(itemId)
     .then(() => {
       item.remove()
     })
     .catch(err =>
-      console.log(err)) 
+      console.log(err))
+    .finally(() => {
+      handleClosePopup(popupDeleteCard)
+      renderLoading(false, buttonDeleteCard, 'Да')
+    })   
 }
 
 //проверка наличия лайка 

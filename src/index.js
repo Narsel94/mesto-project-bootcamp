@@ -196,10 +196,12 @@ popupList.forEach((popup) => {
 });
 
 
-function renderLoading(isLoading, button, defaultText) {
+export function renderLoading(isLoading, button, defaultText) {
   if (isLoading) {
     button.textContent = 'Загрузка..';
   } else {
     button.textContent = defaultText;
   }
 }
+
+//попап удаления 
