@@ -16,9 +16,7 @@ import {
  
 Promise.all([getProfile(), getItems()])
   .then(([info, initialCards]) =>{
-    profileItemName.textContent = info.name;
-    profileItemProfession.textContent = info.about;
-    imgAvatar.setAttribute('src', info.avatar);
+    setUserData(info)
     userId = info._id;
     initialCards.forEach((item) => {
       const InitialCard = createCard(item, userId);
@@ -96,10 +94,8 @@ function editProfileBio(event) {
   renderLoading(true, buttonSumbmitProfile);
   editProfile(inputNameProfile.value, inputProfessionProfile.value)
     .then(res => {
-      if (res.ok){
-      profileItemName.textContent = inputNameProfile.value;
-      profileItemProfession.textContent = inputProfessionProfile.value;
-      }
+      setUserData(res)
+      handleClosePopup(popupEditProfile)
     }) 
     .catch(err => {
       console.log(err);
@@ -107,8 +103,14 @@ function editProfileBio(event) {
     .finally(() => 
     renderLoading(false, buttonSumbmitProfile, 'Сохранить')
     );
-   handleClosePopup(popupEditProfile);
+
 };
+
+function setUserData(data) {
+  profileItemName.textContent = data.name;
+  profileItemProfession.textContent = data.about;
+  imgAvatar.src = data.avatar;
+}
 
 //Функция редактирования Аватара
 function editProfileAvatar(event){
@@ -116,17 +118,14 @@ function editProfileAvatar(event){
   renderLoading(true, buttonSubmitAvatar);
   editAvatar(inputAvatar.value)
     .then(res => {
-      if (res.ok) {
-        imgAvatar.setAttribute('src', inputAvatar.value);
-      }
+      setUserData(res)
+      handleClosePopup(popupEditAvatar)
     })
-    .catch(err => {
-      console.log(err);
-    })
+    .catch(err => console.log(err))
     .finally(() => {
       renderLoading(false, buttonSubmitAvatar, 'Сохранить')
     });
-    handleClosePopup(popupEditAvatar);
+
 }
 
 // добавление слушателя на кнопку изменения аватара
@@ -146,29 +145,17 @@ function handleFormAddCard(event) {
   renderLoading(true, buttonSubmitAddCArd);
   setCard(inputTitleAddCardForm.value, inputImgUrlAddCardForm.value, userId)
     .then(res => {
-      if (res.ok) {
-        const card = {
-          name: inputTitleAddCardForm.value,
-          link: inputImgUrlAddCardForm.value,
-        }; 
-        const newCard = createCard(card, userId);
-        return newCard;
-      }
-      })
-      .then(newCard => {
-        if (userId === newCard.owner._id) {
-           cardTrashButton.remove(); 
-        }
-        cardContainer.prepend(newCard);
-        formAddCard.reset();
-      })
+      const newCard = createCard(res, userId)
+      cardContainer.prepend(newCard);
+      formAddCard.reset();
+      handleClosePopup(popupAddCard);
+    })
     .catch(err => {
       console.log(err);
     })
     .finally(() => 
     renderLoading(false, buttonSubmitAddCArd, 'Создать')
     );
-  handleClosePopup(popupAddCard);
 }
 
 //добавляем слушателя на кнопку добавить карточку
