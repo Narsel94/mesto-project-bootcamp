@@ -10,14 +10,14 @@ import {
   getProfile,
   setCard,
   editProfile,
-  editAvatar,
+  editAvatar
 } from "../src/components/api.js";
   export let userId;
  
 Promise.all([getProfile(), getItems()])
   .then(([info, initialCards]) =>{
-    setUserData(info)
-    userId = info._id;
+    setUserData(info),
+    userId = info._id,
     initialCards.forEach((item) => {
       const InitialCard = createCard(item, userId);
       cardContainer.append(InitialCard);
@@ -26,7 +26,6 @@ Promise.all([getProfile(), getItems()])
   .catch(err => {
     console.log(err);
   });
-  
 
 const popupList = document.querySelectorAll(".popup");
 const cardContainer = document.querySelector(".places");
@@ -106,6 +105,7 @@ function editProfileBio(event) {
 
 };
 
+//заполнение полей профиля
 function setUserData(data) {
   profileItemName.textContent = data.name;
   profileItemProfession.textContent = data.about;
@@ -182,7 +182,6 @@ popupList.forEach((popup) => {
   popup.addEventListener("submit", handleSubmitForm);
 });
 
-
 export function renderLoading(isLoading, button, defaultText) {
   if (isLoading) {
     button.textContent = 'Загрузка..';
@@ -190,5 +189,3 @@ export function renderLoading(isLoading, button, defaultText) {
     button.textContent = defaultText;
   }
 }
-
-//попап удаления 
