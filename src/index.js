@@ -87,24 +87,6 @@ buttonEditProfile.addEventListener("click", () => {
   openEditProfileForm();
 });
 
-//функция редактирования данных профиля
-function editProfileBio(event) {
-  event.preventDefault();
-  renderLoading(true, buttonSumbmitProfile);
-  editProfile(inputNameProfile.value, inputProfessionProfile.value)
-    .then(res => {
-      setUserData(res)
-      handleClosePopup(popupEditProfile)
-    }) 
-    .catch(err => {
-      console.log(err);
-    })
-    .finally(() => 
-    renderLoading(false, buttonSumbmitProfile, 'Сохранить')
-    );
-
-};
-
 //заполнение полей профиля
 function setUserData(data) {
   profileItemName.textContent = data.name;
@@ -112,54 +94,19 @@ function setUserData(data) {
   imgAvatar.src = data.avatar;
 }
 
-//Функция редактирования Аватара
-function editProfileAvatar(event){
-  event.preventDefault();
-  renderLoading(true, buttonSubmitAvatar);
-  editAvatar(inputAvatar.value)
-    .then(res => {
-      setUserData(res)
-      handleClosePopup(popupEditAvatar)
-    })
-    .catch(err => console.log(err))
-    .finally(() => {
-      renderLoading(false, buttonSubmitAvatar, 'Сохранить')
-    });
-
-}
-
 // добавление слушателя на кнопку изменения аватара
-formEditAvatar.addEventListener("submit", editProfileAvatar);
+formEditAvatar.addEventListener("submit", handleAvatarFormSubmit);
 
 // добавление слушателя на кнопку сохранения изменений
-formEditProfile.addEventListener("submit", editProfileBio);
+formEditProfile.addEventListener("submit", handleProfileFormSubmit);
 
 //добавление слушателя на кнопку добавления карточки
 buttonOpenAddCard.addEventListener("click", () =>
   handleOpenPopup(popupAddCard)
 );
 
-//функция добавления карточки на страницу
-function handleFormAddCard(event) {
-  event.preventDefault();
-  renderLoading(true, buttonSubmitAddCArd);
-  setCard(inputTitleAddCardForm.value, inputImgUrlAddCardForm.value, userId)
-    .then(res => {
-      const newCard = createCard(res, userId)
-      cardContainer.prepend(newCard);
-      formAddCard.reset();
-      handleClosePopup(popupAddCard);
-    })
-    .catch(err => {
-      console.log(err);
-    })
-    .finally(() => 
-    renderLoading(false, buttonSubmitAddCArd, 'Создать')
-    );
-}
-
 //добавляем слушателя на кнопку добавить карточку
-formAddCard.addEventListener("submit", handleFormAddCard);
+formAddCard.addEventListener("submit", handleAddCardFormSubmit);
 
 //параметры для валидации
 const validitySettings = {
@@ -182,10 +129,61 @@ popupList.forEach((popup) => {
   popup.addEventListener("submit", handleSubmitForm);
 });
 
-export function renderLoading(isLoading, button, defaultText) {
+//функция рендеринка статуса
+export function renderLoading(isLoading, button, defaultText, loadingText='Сохранение...') {
   if (isLoading) {
-    button.textContent = 'Загрузка..';
+    button.textContent = loadingText;
   } else {
     button.textContent = defaultText;
   }
+}
+
+//универсальная функция сабмита
+export function handleSubmit(request, evt, loadingText = "Сохранение...") {
+  evt.preventDefault();
+  const submitButton = evt.submitter;
+  const initialText = submitButton.textContent;
+  renderLoading(true, submitButton, initialText, loadingText);
+  request()
+    .then(() => {
+      evt.target.reset();
+      handleClosePopup(evt.target.closest('.popup'));
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`);
+    })
+    .finally(() => {
+      renderLoading(false, submitButton, initialText);
+    });
+}
+
+//функция сабмира формы редактирования профиля
+function handleProfileFormSubmit(evt) {
+   function makeRequest() {
+      return editProfile(inputNameProfile.value, inputProfessionProfile.value).then((userData) => {
+      setUserData(userData)
+    });
+  }
+  handleSubmit(makeRequest, evt);
+}
+
+//функция сабмира формы редактирования аватара
+function handleAvatarFormSubmit(evt) {
+  function makeRequest() {
+    return editAvatar(inputAvatar.value).then((userData) => {
+      setUserData(userData)
+    });
+  }
+  handleSubmit(makeRequest, evt);
+}
+
+//функция сабмира формы добавления карточек
+function handleAddCardFormSubmit(evt) {
+  function makeRequest() {
+    return setCard(inputTitleAddCardForm.value, inputImgUrlAddCardForm.value).then((cardData) => {
+      const newCard = createCard(cardData, cardData.owner._id)
+      cardContainer.prepend(newCard);
+  })
+  }
+  handleSubmit(makeRequest, evt, 'Создание...');
 }

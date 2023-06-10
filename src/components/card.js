@@ -1,6 +1,6 @@
-import { userId } from "../index.js";
+import { userId, renderLoading} from "../index.js";
 import { deleteItems, putCardLike, deleteCardLike } from "./api.js";
-import { handleOpenPopup} from "./modal.js";
+import { handleOpenPopup, handleClosePopup} from "./modal.js";
 
 const templateCard = document
   .getElementById("template-cards")
@@ -10,6 +10,10 @@ const templateCard = document
 const imagePopup = document.querySelector(".popup_name_image");
 const imageCaptionPopup = imagePopup.querySelector(".popup__image-caption");
 const imageMain = imagePopup.querySelector(".popup__image");
+const delPopup = document.querySelector(".popup_name_delet");
+const dellForm = delPopup.querySelector(".popup__form");
+dellForm.addEventListener('submit', handleDelPopupFormSubmit)
+let element;
 
 //функция создание карточки
 function createCard(card, idUser) {
@@ -22,6 +26,7 @@ function createCard(card, idUser) {
   cardTitle.textContent = card.name;
   cardImage.setAttribute("src", card.link);
   cardImage.setAttribute("alt", card.name);
+  
 
   cardLikesCounter.textContent = card.likes.length;
   //на картинку слушатель открытия попапа картинки
@@ -32,13 +37,16 @@ function createCard(card, idUser) {
 
   //кнопка корзины
   const cardTrashButton = cardElement.querySelector(".place__trash-button");
-  cardTrashButton.addEventListener("click", () =>
-    handleDeleteCard(card, cardElement)
-  );
+  cardTrashButton.setAttribute('id', card._id);
+  cardTrashButton.addEventListener("click", () => openDelPopup(card._id, cardElement))
+    //handleDeleteCard(card, cardElement)
+  // );
 
-  //проверка для удаления кнопки корзины
+    //проверка для удаления кнопки корзины
   if (card.owner._id !== idUser) {
     cardTrashButton.remove();
+  } else {
+    cardElement.setAttribute('id', card._id)
   }
 
   //отрисовка лайкнутых мною карточек
@@ -58,13 +66,6 @@ function makeImagePopup(title, link) {
   imageMain.setAttribute("alt", title);
   imageCaptionPopup.textContent = title;
   handleOpenPopup(imagePopup);
-}
-
-// функция удаления карточки с сервера и верстки
-function handleDeleteCard(card, element) {
-  deleteItems(card._id)
-    .then(element.parentNode.removeChild(element))
-    .catch((err) => console.log(err));
 }
 
 //проверка наличия лайка
@@ -97,5 +98,36 @@ function rendelLike(likesArray, button, counter) {
   );
   counter.textContent = likesArray.length;
 }
+
+//открытие попапа удаления карточки 
+function openDelPopup(cardID) {
+  handleOpenPopup(delPopup);
+  const buttonDelTest = delPopup.querySelector(".popup__submit-button");
+  buttonDelTest.card_id = cardID;
+  buttonDelTest.removeAttribute("disabled");
+}
+
+//функция удаления карточки с сервера и верстки
+function handleDelPopupFormSubmit(evt) {
+    evt.preventDefault();
+    const submitButton = evt.submitter;
+    const initialText = submitButton.textContent;
+    renderLoading(true, submitButton, initialText, 'Удаление...');
+    deleteItems(evt.submitter.card_id)
+    .then(
+      evt.target.reset(),
+      element = document.getElementById(evt.submitter.card_id),
+      element.parentNode.removeChild(element),
+      handleClosePopup(evt.target.closest('.popup')),
+      delete submitButton.card_id
+    )
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`);
+    })
+    .finally(
+      renderLoading(false, submitButton, "Да"),
+    )
+}
+
 
 export default createCard;
