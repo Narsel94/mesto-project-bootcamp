@@ -32,4 +32,4 @@
 - Рефакторинг кода
 - Реализация взаимодействия с сервером
 
-![GH-PAGES](https://narsel94.github.io/mesto-project-bootcamp/)
+[GH-PAGES](https://narsel94.github.io/mesto-project-bootcamp/)
