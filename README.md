@@ -32,4 +32,4 @@
 - Рефакторинг кода
 - Реализация взаимодействия с сервером
 
-[https://res.cloudinary.com/practicaldev/image/fetch/s--ux15-5qy--/c_imagga_scale,f_auto,fl_progressive,h_1080,q_auto,w_1080/https://dev-to-uploads.s3.amazonaws.com/i/a12tj8n6facp0kt0xb0n.jpeg](https://narsel94.github.io/mesto-project-bootcamp/)
+[Ссылка на GH-Pages](https://narsel94.github.io/mesto-project-bootcamp/)
